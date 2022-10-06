@@ -35,7 +35,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   getProfile(@Request() req) {
-    // todo: return more data (name, info...)
+    // todo: return more data
     return req.user;
   }
 }
