@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { hash } from 'src/lib/hash';
 import { CreateUser } from './interfaces/create-user.interface';
-import { User } from './interfaces/user.interface';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  private readonly users: User[] = [
-    {
-      id: 1,
-      email: 'john',
-      passwordHash: 'changeme',
-    },
-    {
-      id: 2,
-      email: 'maria',
-      passwordHash: 'guess',
-    },
-  ];
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly usersRepository: Repository<UserEntity>,
+  ) {}
 
-  async findOne(email: string): Promise<User | undefined> {
-    return this.users.find((user) => user.email === email);
+  async findOne(email: string) {
+    return await this.usersRepository.findOne({
+      where: { email },
+      relations: { userInfo: true },
+    });
+  }
+
+  async remove(email: string) {
+    await this.usersRepository.delete({ email });
   }
 
   async create(user: CreateUser) {
@@ -28,12 +29,9 @@ export class UsersService {
       return null;
     }
 
-    const newUser = {
-      ...user,
-      id: this.users.at(-1).id + 1,
-      passwordHash: await hash(user.password),
-    };
-    this.users.push(newUser);
-    return newUser;
+    return await this.usersRepository.save({
+      email: user.email,
+      passwordHash: await hash(user.password)
+    })
   }
 }

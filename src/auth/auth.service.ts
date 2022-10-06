@@ -33,4 +33,8 @@ export class AuthService {
     }
     return await this.login({ email: created.email });
   }
+
+  async getProfile(email: string) {
+    return await this.usersService.findOne(email);
+  }
 }
