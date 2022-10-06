@@ -4,6 +4,7 @@ import { CreateUser } from './interfaces/create-user.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
+import { UpdateUser } from './interfaces/update-user.interface';
 
 @Injectable()
 export class UsersService {
@@ -19,6 +20,21 @@ export class UsersService {
     });
   }
 
+  async update(user: UpdateUser) {
+    const userInfo = {
+      name: user.name,
+      phoneNumber: user.phoneNumber,
+      address: user.address,
+      info: user.info,
+    };
+
+    return await this.usersRepository.save({
+      email: user.email,
+      passwordHash: await hash(user.password),
+      userInfo: Object.keys(userInfo).length ? userInfo : undefined,
+    });
+  }
+
   async remove(email: string) {
     await this.usersRepository.delete({ email });
   }
@@ -31,7 +47,7 @@ export class UsersService {
 
     return await this.usersRepository.save({
       email: user.email,
-      passwordHash: await hash(user.password)
-    })
+      passwordHash: await hash(user.password),
+    });
   }
 }
