@@ -20,23 +20,26 @@ export class UsersService {
     });
   }
 
-  async update(user: UpdateUser) {
+  async update(id: number, user: UpdateUser) {
     const userInfo = {
       name: user.name,
       phoneNumber: user.phoneNumber,
       address: user.address,
       info: user.info,
     };
+    const shouldAddInfo = Object.values(userInfo).some((x) => x != null);
 
     return await this.usersRepository.save({
+      id,
       email: user.email,
       passwordHash: await hash(user.password),
-      userInfo: Object.keys(userInfo).length ? userInfo : undefined,
+      userInfo: shouldAddInfo ? userInfo : undefined,
     });
   }
 
   async remove(email: string) {
-    await this.usersRepository.delete({ email });
+    const result = await this.usersRepository.delete({ email });
+    return result.affected;
   }
 
   async create(user: CreateUser) {

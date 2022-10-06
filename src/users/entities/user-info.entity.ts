@@ -5,15 +5,15 @@ export class UserInfoEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  name: string;
+  @Column({ nullable: true, default: null })
+  name?: string;
 
-  @Column()
-  phoneNumber: string;
+  @Column({ nullable: true, default: null })
+  phoneNumber?: string;
 
-  @Column()
-  info: string;
+  @Column({ nullable: true, default: null })
+  info?: string;
 
-  @Column()
-  address: string;
+  @Column({ nullable: true, default: null })
+  address?: string;
 }

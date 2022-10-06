@@ -1,19 +1,16 @@
 import {
   Controller,
-  Get,
   Request,
   Post,
   UseGuards,
-  UnauthorizedException,
   Body,
-  NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { CreateUser } from './users/interfaces/create-user.interface';
 
+// todo: extract into an AuthController
 @Controller()
 export class AppController {
   constructor(private readonly authService: AuthService) {}
@@ -31,15 +28,5 @@ export class AppController {
       throw new ConflictException();
     }
     return token;
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  async getProfile(@Request() req) {
-    const profile = await this.authService.getProfile(req.user.email);
-    if (!profile) {
-      throw new NotFoundException();
-    }
-    return profile;
   }
 }

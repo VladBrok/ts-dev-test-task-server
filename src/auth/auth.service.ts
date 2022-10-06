@@ -13,7 +13,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.findOne(email);
-    if (user && compare(pass, user.passwordHash)) {
+    if (user && (await compare(pass, user.passwordHash))) {
       const { passwordHash, ...result } = user;
       return result;
     }
@@ -32,9 +32,5 @@ export class AuthService {
       return null;
     }
     return await this.login({ email: created.email });
-  }
-
-  async getProfile(email: string) {
-    return await this.usersService.findOne(email);
   }
 }
