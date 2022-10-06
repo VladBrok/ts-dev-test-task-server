@@ -5,8 +5,8 @@ import {
   JoinColumn,
   OneToOne,
 } from 'typeorm';
-import { User } from '../interfaces/user.interface';
 import { UserInfoEntity } from './user-info.entity';
+import { User } from '../interfaces/user.interface';
 
 @Entity()
 export class UserEntity implements User {
