@@ -6,6 +6,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import { JwtStrategy } from './jwt.strategy';
+import { TokenBlacklistModule } from 'src/token-blacklist/token-blacklist.module';
 
 dotenv.config();
 
@@ -13,9 +14,10 @@ dotenv.config();
   imports: [
     UsersModule,
     PassportModule,
+    TokenBlacklistModule,
     JwtModule.register({
       secret: process.env.SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '180s' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],

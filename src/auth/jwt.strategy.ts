@@ -2,18 +2,31 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ValidatedUser } from 'src/users/interfaces/validated-user.interface';
+import { TokenBlacklistService } from 'src/token-blacklist/token-blacklist.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly tokenBlacklistService: TokenBlacklistService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.SECRET,
+      secretOrKeyProvider: (
+        _request: Request,
+        rawJwtToken: any,
+        done: (err: any, secretOrKey?: string | Buffer) => void,
+      ) => {
+        tokenBlacklistService.findOne(rawJwtToken).then((token) => {
+          if (token) {
+            done(new Error('The token is blocked'));
+          } else {
+            done(null, process.env.SECRET);
+          }
+        });
+      },
     });
   }
 
-  async validate(payload: any): Promise<ValidatedUser> {
-    return { id: payload.sub };
+  async validate(payload: any) {
+    return { id: payload.sub, ...payload };
   }
 }

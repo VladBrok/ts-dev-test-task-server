@@ -4,12 +4,14 @@ import {
   UseGuards,
   Body,
   ConflictException,
+  Get,
 } from '@nestjs/common';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { CreateUserDto } from './users/dto/create-user.dto';
 import { User } from './users/user.decorator';
 import { LoginUserDto } from './users/dto/login-user.dto';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 @Controller()
 export class AppController {
@@ -19,6 +21,15 @@ export class AppController {
   @Post('auth/login')
   async login(@User() user: LoginUserDto) {
     return this.authService.login(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('auth/logout')
+  async logout(@User() user: any) {
+    return this.authService.logout({
+      value: user.token,
+      expirationInSeconds: user.exp,
+    });
   }
 
   @Post('auth/register')
