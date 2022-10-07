@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   OneToOne,
+  Index,
 } from 'typeorm';
 import { UserInfoEntity } from './user-info.entity';
 
@@ -12,6 +13,7 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Index()
   @Column()
   email: string;
 
