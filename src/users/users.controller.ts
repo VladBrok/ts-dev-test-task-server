@@ -9,6 +9,7 @@ import {
 import { Controller } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ValidatedUser } from './interfaces/validated-user.interface';
 import { User } from './user.decorator';
 import { UsersService } from './users.service';
 
@@ -18,19 +19,21 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  // todo: add type (user: {id: number})
-  async findOne(@User() user: any) {
+  async findOne(@User() user: ValidatedUser) {
     return await this.getOrThrow(user.id);
   }
 
   @Put()
-  async update(@User() validatedUser: any, @Body() user: UpdateUserDto) {
+  async update(
+    @User() validatedUser: ValidatedUser,
+    @Body() userToUpdate: UpdateUserDto,
+  ) {
     await this.getOrThrow(validatedUser.id);
-    return await this.usersService.update(validatedUser.id, user);
+    return await this.usersService.update(validatedUser.id, userToUpdate);
   }
 
   @Delete()
-  async remove(@User() user: any) {
+  async remove(@User() user: ValidatedUser) {
     const affected = await this.usersService.remove(user.id);
 
     if (!affected) {

@@ -1,6 +1,5 @@
 import {
   Controller,
-  Request,
   Post,
   UseGuards,
   Body,
@@ -12,7 +11,6 @@ import { CreateUserDto } from './users/dto/create-user.dto';
 import { User } from './users/user.decorator';
 import { LoginUserDto } from './users/dto/login-user.dto';
 
-// todo: extract into an AuthController
 @Controller()
 export class AppController {
   constructor(private readonly authService: AuthService) {}
