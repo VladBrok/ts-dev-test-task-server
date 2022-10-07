@@ -26,9 +26,11 @@ export class AppController {
   @Post('auth/register')
   async register(@Body() user: CreateUserDto) {
     const token = await this.authService.register(user);
+
     if (!token) {
       throw new ConflictException();
     }
+
     return token;
   }
 }
