@@ -6,10 +6,9 @@ import {
   OneToOne,
 } from 'typeorm';
 import { UserInfoEntity } from './user-info.entity';
-import { User } from '../interfaces/user.interface';
 
 @Entity()
-export class UserEntity implements User {
+export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

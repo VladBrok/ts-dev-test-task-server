@@ -6,38 +6,42 @@ import {
   Put,
   Body,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UpdateUser } from './interfaces/update-user.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get(':email')
-  async findOne(@Param('email') email: string) {
-    return await this.getOrThrow(email);
+  @Get(':id')
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.getOrThrow(id);
   }
 
-  @Put(':email')
-  async update(@Param('email') email: string, @Body() user: UpdateUser) {
-    const id = (await this.getOrThrow(email)).id;
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() user: UpdateUserDto,
+  ) {
+    await this.getOrThrow(id);
     return await this.usersService.update(id, user);
   }
 
-  @Delete(':email')
-  async remove(@Param('email') email: string) {
-    const affected = await this.usersService.remove(email);
+  @Delete(':id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    const affected = await this.usersService.remove(id);
     if (!affected) {
       throw new NotFoundException();
     }
   }
 
-  async getOrThrow(email: string) {
-    const user = await this.usersService.findOne(email);
+  async getOrThrow(id: number) {
+    const user = await this.usersService.findOneById(id);
     if (!user) {
       throw new NotFoundException();
     }

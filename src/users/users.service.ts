@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { hash } from 'src/lib/hash';
-import { CreateUser } from './interfaces/create-user.interface';
+import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from './entities/user.entity';
-import { UpdateUser } from './interfaces/update-user.interface';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,37 +13,45 @@ export class UsersService {
     private readonly usersRepository: Repository<UserEntity>,
   ) {}
 
-  async findOne(email: string) {
+  async findOneById(id: number) {
+    return await this.usersRepository.findOne({
+      where: { id },
+      relations: { userInfo: true },
+    });
+  }
+
+  async findOneByEmail(email: string) {
     return await this.usersRepository.findOne({
       where: { email },
       relations: { userInfo: true },
     });
   }
 
-  async update(id: number, user: UpdateUser) {
+  async update(id: number, user: UpdateUserDto) {
     const userInfo = {
       name: user.name,
       phoneNumber: user.phoneNumber,
       address: user.address,
       info: user.info,
     };
-    const shouldAddInfo = Object.values(userInfo).some((x) => x != null);
+    const shouldUpdateInfo = Object.values(userInfo).some((x) => x != null);
 
     return await this.usersRepository.save({
       id,
       email: user.email,
-      passwordHash: await hash(user.password),
-      userInfo: shouldAddInfo ? userInfo : undefined,
+      passwordHash: user.password ? await hash(user.password) : undefined,
+      userInfo: shouldUpdateInfo ? userInfo : undefined,
     });
   }
 
-  async remove(email: string) {
-    const result = await this.usersRepository.delete({ email });
+  async remove(id: number) {
+    const result = await this.usersRepository.delete({ id });
     return result.affected;
   }
 
-  async create(user: CreateUser) {
-    const exists = (await this.findOne(user.email)) != null;
+  async create(user: CreateUserDto) {
+    const exists =
+      (await this.usersRepository.findOneBy({ email: user.email })) != null;
     if (exists) {
       return null;
     }

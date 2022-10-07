@@ -8,7 +8,9 @@ import {
 } from '@nestjs/common';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
-import { CreateUser } from './users/interfaces/create-user.interface';
+import { CreateUserDto } from './users/dto/create-user.dto';
+import { User } from './users/user.decorator';
+import { LoginUserDto } from './users/dto/login-user.dto';
 
 // todo: extract into an AuthController
 @Controller()
@@ -17,12 +19,12 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@User() user: LoginUserDto) {
+    return this.authService.login(user);
   }
 
   @Post('auth/register')
-  async register(@Body() user: CreateUser) {
+  async register(@Body() user: CreateUserDto) {
     const token = await this.authService.register(user);
     if (!token) {
       throw new ConflictException();
