@@ -8,7 +8,12 @@ export const User = createParamDecorator(
 );
 
 const extractToken = (req: any) => {
-  const tokenParts = req.headers.authorization.split(' ');
+  const tokenParts = req.headers.authorization?.split(' ');
+
+  if (!tokenParts) {
+    return;
+  }
+
   if (/^Bearer$/i.test(tokenParts[0].trim())) {
     return tokenParts[1].trim();
   }
