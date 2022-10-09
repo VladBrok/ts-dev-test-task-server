@@ -18,7 +18,7 @@ dotenv.config();
     TokenBlacklistModule,
     JwtModule.register({
       secret: process.env.SECRET,
-      signOptions: { expiresIn: '180s' },
+      signOptions: { expiresIn: '1200s' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
