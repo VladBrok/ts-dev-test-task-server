@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'src/lib/hash';
@@ -30,7 +30,6 @@ export class AuthService {
     const payload = { username: user.email, sub: user.id };
 
     return {
-      id: user.id,
       access_token: this.jwtService.sign(payload),
     };
   }
