@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import { JwtStrategy } from './jwt.strategy';
 import { TokenBlacklistModule } from 'src/token-blacklist/token-blacklist.module';
+import { AuthController } from './auth.controller';
 
 dotenv.config();
 
@@ -22,5 +23,6 @@ dotenv.config();
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
+  controllers: [AuthController],
 })
 export class AuthModule {}
